@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "466451446927",
+    "project_id": "salt-m",
+    "storage_bucket": "salt-m.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:466451446927:android:347a409d2a18dbcb3304fa",
+        "android_client_info": {
+          "package_name": "com.example.musicappserver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "466451446927-o9dfnjj6bisfph8e15392ni3vqjdas34.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.musicappserver",
+            "certificate_hash": "aea33d491ff535f381e016bb47b04e2651832c27"
+          }
+        },
+        {
+          "client_id": "466451446927-onpeedmimknifpr7d6tu4r1fet92avl2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZ_kdMWx4GakB6PDKrQ8RbjKQ3o1NYyWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "466451446927-onpeedmimknifpr7d6tu4r1fet92avl2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
