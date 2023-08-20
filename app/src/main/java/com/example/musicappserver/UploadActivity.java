@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,6 +16,7 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
@@ -22,12 +24,15 @@ import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.musicappserver.Model.Constants;
+import com.example.musicappserver.Model.Upload;
 import com.example.musicappserver.Model.UploadSong;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,6 +46,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,19 +54,21 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
 
     private TextView txtSongFileSelected;
     private ProgressBar progressBar;
-    private Uri audioUri;
-    private StorageReference mStorageRef;
+    private Uri audioUri,filePath;
+    private StorageReference mStorageRef, storageReference;
     private StorageTask mUploadsTask;
     private DatabaseReference referenceSongs;
     String songsCategory;
     MediaMetadataRetriever metadataRetriever;
     byte [] art;
     private String title1, artist1, album_art1 = "", duration1;
-    private TextView title, artist, duration, album, dataa;
+    private EditText title, artist, album, dataa;
     private ImageView album_art;
 
-    private Button open,btnSubmit,btnUploadAlbum;
+    private Button open,btnSubmit,btnUploadImg;
     FirebaseAuth mAuth;
+
+    private static final int PICK_IMAGE_REQUEST = 234;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +82,7 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
         metadataRetriever = new MediaMetadataRetriever();
         referenceSongs = FirebaseDatabase.getInstance("https://salt-m-default-rtdb.asia-southeast1.firebasedatabase.app").getReference().child("songs");
         mStorageRef = FirebaseStorage.getInstance().getReference().child("songs");
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         Spinner spinner = findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(this);
@@ -103,10 +112,10 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
                 uploadFileTofirebase(v);
             }
         });
-        btnUploadAlbum.setOnClickListener(new View.OnClickListener() {
+        btnUploadImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openAlbumUploadsActivity(v);
+                showFileChoose();
             }
         });
     }
@@ -129,21 +138,19 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
     private void initViews() {
         txtSongFileSelected = findViewById(R.id.txtSongFileSelected);
         progressBar = findViewById(R.id.progress);
-        title = findViewById(R.id.title);
-        artist = findViewById(R.id.artist);
-        duration = findViewById(R.id.duration);
-        album = findViewById(R.id.album);
+        title = findViewById(R.id.editTitle);
+        artist = findViewById(R.id.editArtist);
+        album = findViewById(R.id.editAlbum);
         dataa= findViewById(R.id.dataa);
         album_art = findViewById(R.id.albumImg);
         open = findViewById(R.id.open);
         btnSubmit = findViewById(R.id.btnSubmit);
-        btnUploadAlbum = findViewById(R.id.btnUploadAlbum);
+        btnUploadImg = findViewById(R.id.btnUploadImg);
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         songsCategory = parent.getItemAtPosition(position).toString();
-        Toast.makeText(this, "Selected: " + songsCategory, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -166,19 +173,17 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
             String fileName = getFileName(audioUri);
             txtSongFileSelected.setText(fileName);
             metadataRetriever.setDataSource(this, audioUri);
-
-            art = metadataRetriever.getEmbeddedPicture();
-            Bitmap bitmap = BitmapFactory.decodeByteArray(art, 0, art.length);
-            album_art.setImageBitmap(bitmap);
-            album.setText(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
-            artist.setText(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
-            dataa.setText(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE));
-            duration.setText(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-            title.setText(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
-
-            artist1 = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-            title1 = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
             duration1 = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        }
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null){
+            filePath = data.getData();
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),filePath);
+                album_art.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -213,7 +218,7 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
 
     public void uploadFileTofirebase(View v){
         if(txtSongFileSelected.equals("No file Selected")){
-            Toast.makeText(this, "please select an image!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "please select a song!", Toast.LENGTH_SHORT).show();
         } else {
             if(mUploadsTask != null && mUploadsTask.isInProgress())
                 Toast.makeText(this, "Uploading is already in progress!", Toast.LENGTH_SHORT).show();
@@ -223,7 +228,27 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
 }
 
     private void uploadFiles() {
-        if(audioUri != null){
+        if(audioUri != null && filePath !=null){
+                final StorageReference sRef = storageReference.child(Constants.STORAGE_PATH_ART +
+                        System.currentTimeMillis() + "."+getFileExtension(filePath));
+                sRef.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        sRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                artist1 = artist.getText().toString();
+                                title1 = title.getText().toString();
+                                album_art1 = uri.toString();
+                            }
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(UploadActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             Toast.makeText(this, "uploads please wait!", Toast.LENGTH_SHORT).show();
             progressBar.setVisibility(View.VISIBLE);
             final StorageReference storageReference = mStorageRef.child(System.currentTimeMillis()+"."+getfileextention(audioUri));
@@ -236,6 +261,13 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
                             UploadSong uploadSong = new UploadSong(songsCategory,title1,artist1,album_art1,duration1,uri.toString());
                             String uploadId = referenceSongs.push().getKey();
                             referenceSongs.child(uploadId).setValue(uploadSong);
+                            Toast.makeText(UploadActivity.this, title1 + " has been successfully uploaded!", Toast.LENGTH_SHORT).show();
+                            title.getText().clear();
+                            album.getText().clear();
+                            artist.getText().clear();
+                            dataa.getText().clear();
+                            txtSongFileSelected.setText("No file Selected");
+                            album_art.setImageResource(android.R.color.transparent);
                         }
                     });
                 }
@@ -247,7 +279,7 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
                 }
             });
         } else {
-            Toast.makeText(this, "No file is selected to upload", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No file is selected to upload or no art uploaded", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -256,9 +288,16 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(audioUri));
     }
+    public String getFileExtension(Uri uri){
+        ContentResolver cr = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getMimeTypeFromExtension(cr.getType(uri));
+    }
 
-    public void openAlbumUploadsActivity(View v){
-        Intent intent = new Intent(UploadActivity.this, UploadAlbumActivity.class);
-        startActivity(intent);
+    private void showFileChoose() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"),PICK_IMAGE_REQUEST);
     }
 }

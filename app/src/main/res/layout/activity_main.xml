@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -46,16 +45,61 @@
             android:text="No file Selected"/>
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progress"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+    <LinearLayout
+        android:id="@+id/uploadLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/uploadLayout"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"></ProgressBar>
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_weight="1">
+
+
+
+            <ImageView
+                android:id="@+id/albumImg"
+                android:layout_width="150dp"
+                android:layout_height="150dp"/>
+
+        <Button
+            android:id="@+id/btnUploadImg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose Image" />
+
+        <EditText
+            android:id="@+id/editTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Name"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/editAlbum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Album Name"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/editArtist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Artist"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/dataa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="About the song"
+            android:inputType="text" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnSubmit"
@@ -63,69 +107,20 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/progress"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:text="SUBMIT" />
 
-    <LinearLayout
-        android:id="@+id/details"
+    <ProgressBar
+        android:id="@+id/progress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnSubmit"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="title"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/album"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="album"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/artist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="artist"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/dataa"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="data"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/duration"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="duration"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/albumImg"
-            android:layout_width="150dp"
-            android:layout_height="150dp" />
-    </LinearLayout>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnUploadAlbum"
-        android:text="OPEN UPLOAD ALBUM"
-        android:layout_below="@+id/details"/>
+        android:layout_below="@+id/uploadLayout2"
+        android:layout_marginTop="20dp"></ProgressBar>
 
 </RelativeLayout>

@@ -9,7 +9,7 @@ import android.widget.Button;
 
 public class NavigatorActivity extends AppCompatActivity {
 
-    private Button goToUpload, goToSong, goToAllSongs;
+    private Button goToUpload, goToSong, goToAllSongs, btnPlaylist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +19,7 @@ public class NavigatorActivity extends AppCompatActivity {
             goToSong = findViewById(R.id.goToSong);
             goToUpload = findViewById(R.id.goToUpload);
             goToAllSongs = findViewById(R.id.goToAllSongs);
+            btnPlaylist = findViewById(R.id.btnPlaylist);
 
             goToUpload.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -38,6 +39,13 @@ public class NavigatorActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     startActivity(new Intent(NavigatorActivity.this, AllSongsActivity.class));
+                }
+            });
+
+            btnPlaylist.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(NavigatorActivity.this, UploadAlbumActivity.class));
                 }
             });
     }
