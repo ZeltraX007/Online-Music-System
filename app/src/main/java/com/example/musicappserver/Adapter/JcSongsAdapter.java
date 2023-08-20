@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.musicappserver.Model.GetSongs;
 import com.example.musicappserver.Model.Utility;
 import com.example.musicappserver.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -67,6 +68,7 @@ public class JcSongsAdapter extends RecyclerView.Adapter<JcSongsAdapter.SongsAda
 
     public class SongsAdapterView extends RecyclerView.ViewHolder{
         private TextView tvTitle,tvArtist,tvDuration;
+        private ImageView iv_artwork;
         ImageView ivPlayActive;
         public SongsAdapterView(@NonNull View itemView) {
             super(itemView);
@@ -75,6 +77,7 @@ public class JcSongsAdapter extends RecyclerView.Adapter<JcSongsAdapter.SongsAda
             tvArtist = itemView.findViewById(R.id.tv_artist);
             tvDuration = itemView.findViewById(R.id.tv_duration);
             ivPlayActive = itemView.findViewById(R.id.iv_play_active);
+            iv_artwork = itemView.findViewById(R.id.iv_artwork);
         }
 
         public void bind(GetSongs getSongs, RecyclerItemClickListner listner) {

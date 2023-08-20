@@ -26,11 +26,19 @@
             android:id="@+id/goToUpload"/>
 
         <Button
+            android:id="@+id/goToSong"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="100dp"
+            android:layout_weight="1"
+            android:text="Play songs" />
+
+        <Button
+            android:id="@+id/goToAllSongs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Play songs"
-            android:id="@+id/goToSong"/>
+            android:text="Play songs" />
 
 
     </LinearLayout>

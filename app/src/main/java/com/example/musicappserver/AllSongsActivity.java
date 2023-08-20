@@ -23,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SongActivity extends AppCompatActivity {
+public class AllSongsActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     ProgressBar progressBar;
@@ -59,28 +59,25 @@ public class SongActivity extends AppCompatActivity {
         valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                  mupload.clear();
-                  for(DataSnapshot das: snapshot.getChildren()){
-                      GetSongs getSongs = das.getValue(GetSongs.class);
-                      getSongs.setmKey(das.getKey());
-                      currentIndex = 0;
-                      final String s = getIntent().getExtras().getString("songsCategory");
-                      if(s.equals(getSongs.getSongCategory())){
-                          mupload.add(getSongs);
-                          checkin = true;
-                          jcAudios.add(JcAudio.createFromURL(getSongs.getSongTitle(),getSongs.getSongLink()));
-                      }
-                  }
-                  adapter.setSelectedPosition(0);
-                  recyclerView.setAdapter(adapter);
-                  adapter.notifyDataSetChanged();
-                  progressBar.setVisibility(View.GONE);
+                mupload.clear();
+                for(DataSnapshot das: snapshot.getChildren()){
+                    GetSongs getSongs = das.getValue(GetSongs.class);
+                    getSongs.setmKey(das.getKey());
+                    currentIndex = 0;
+                    mupload.add(getSongs);
+                    checkin = true;
+                    jcAudios.add(JcAudio.createFromURL(getSongs.getSongTitle(),getSongs.getSongLink()));
+                }
+                adapter.setSelectedPosition(0);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                progressBar.setVisibility(View.GONE);
 
-                  if(checkin){
-                      jcPlayerView.initPlaylist(jcAudios,null);
-                  } else {
-                      Toast.makeText(SongActivity.this, "there is no songs!", Toast.LENGTH_SHORT).show();
-                  }
+                if(checkin){
+                    jcPlayerView.initPlaylist(jcAudios,null);
+                } else {
+                    Toast.makeText(AllSongsActivity.this, "there is no songs!", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
