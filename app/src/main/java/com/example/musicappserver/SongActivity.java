@@ -2,6 +2,8 @@ package com.example.musicappserver;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,12 +51,18 @@ public class SongActivity extends AppCompatActivity {
 
                 changeSelectedSong(position);
 
-                jcPlayerView.playAudio(jcAudios.get(position));
-                jcPlayerView.setVisibility(View.VISIBLE);
-                jcPlayerView.createNotification();
+                OneSongFragment fragment = new OneSongFragment(position);
+                fragment.setSong(songs);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(R.id.songFrag,fragment);
+                ft.commit();
+
+//                jcPlayerView.playAudio(jcAudios.get(position));
+//                jcPlayerView.setVisibility(View.VISIBLE);
+//                jcPlayerView.createNotification();
             }
         });
-        databaseReference = FirebaseDatabase.getInstance("https://salt-m-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("songs");
+        databaseReference = FirebaseDatabase.getInstance().getReference("songs");
         System.out.println(databaseReference);
         valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -105,5 +113,13 @@ public class SongActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mupload = new ArrayList<>();
         recyclerView.setAdapter(adapter);
+    }
+
+    public ArrayList<JcAudio> getJcAudios() {
+        return jcAudios;
+    }
+
+    public List<GetSongs> getMupload() {
+        return mupload;
     }
 }

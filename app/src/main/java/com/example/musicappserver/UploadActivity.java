@@ -77,10 +77,9 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
 
         initViews();
         mAuth = FirebaseAuth.getInstance();
-        signInAnonymously();
 
         metadataRetriever = new MediaMetadataRetriever();
-        referenceSongs = FirebaseDatabase.getInstance("https://salt-m-default-rtdb.asia-southeast1.firebasedatabase.app").getReference().child("songs");
+        referenceSongs = FirebaseDatabase.getInstance().getReference().child("songs");
         mStorageRef = FirebaseStorage.getInstance().getReference().child("songs");
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -118,21 +117,6 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
                 showFileChoose();
             }
         });
-    }
-
-    private void signInAnonymously() {
-        mAuth.signInAnonymously().addOnSuccessListener(this, new  OnSuccessListener<AuthResult>() {
-                    @Override
-                    public void onSuccess(AuthResult authResult) {
-                        // do your stuff
-                    }
-                })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        Log.e(TAG, "signInAnonymously:FAILURE", exception);
-                    }
-                });
     }
 
     private void initViews() {
@@ -229,6 +213,10 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
 
     private void uploadFiles() {
         if(audioUri != null && filePath !=null){
+            title.setEnabled(false);
+            artist.setEnabled(false);
+            album.setEnabled(false);
+            dataa.setEnabled(false);
                 final StorageReference sRef = storageReference.child(Constants.STORAGE_PATH_ART +
                         System.currentTimeMillis() + "."+getFileExtension(filePath));
                 sRef.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -262,6 +250,10 @@ public class UploadActivity extends AppCompatActivity implements AdapterView.OnI
                             String uploadId = referenceSongs.push().getKey();
                             referenceSongs.child(uploadId).setValue(uploadSong);
                             Toast.makeText(UploadActivity.this, title1 + " has been successfully uploaded!", Toast.LENGTH_SHORT).show();
+                            title.setEnabled(true);
+                            artist.setEnabled(true);
+                            album.setEnabled(true);
+                            dataa.setEnabled(true);
                             title.getText().clear();
                             album.getText().clear();
                             artist.getText().clear();

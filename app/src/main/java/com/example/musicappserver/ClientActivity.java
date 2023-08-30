@@ -11,6 +11,8 @@ import android.os.Bundle;
 import com.example.musicappserver.Adapter.RecyclerViewAdapter;
 import com.example.musicappserver.Model.Constants;
 import com.example.musicappserver.Model.Uploads;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +29,7 @@ public class ClientActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private ProgressDialog progressDialog;
     private List<Uploads> uploads;
+    FirebaseAuth auth;
 
 
     @Override
@@ -40,14 +43,17 @@ public class ClientActivity extends AppCompatActivity {
         uploads = new ArrayList<>();
         progressDialog.setMessage("please wait....");
         progressDialog.show();
-        mDatabase = FirebaseDatabase.getInstance("https://salt-m-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("uploads");
+        mDatabase = FirebaseDatabase.getInstance().getReference("uploads");
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 progressDialog.dismiss();
                 for(DataSnapshot postsnapshot : snapshot.getChildren()){
                     Uploads upload = postsnapshot.getValue(Uploads.class);
-                    uploads.add(upload);
+                    if(currentUser.getEmail().equals(upload.getUploadedBy()))
+                        uploads.add(upload);
                 }
                 adapter = new RecyclerViewAdapter(getApplicationContext(),uploads);
                 recyclerView.setAdapter(adapter);

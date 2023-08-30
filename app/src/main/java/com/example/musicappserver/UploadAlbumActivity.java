@@ -27,6 +27,8 @@ import com.example.musicappserver.Model.Constants;
 import com.example.musicappserver.Model.Upload;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -47,6 +49,8 @@ public class UploadAlbumActivity extends AppCompatActivity{
     String songsCategory;
     private static final int PICK_IMAGE_REQUEST = 234;
     private Uri filePath;
+
+    FirebaseAuth auth;
     StorageReference storageReference;
     DatabaseReference mDatabase;
 
@@ -56,8 +60,9 @@ public class UploadAlbumActivity extends AppCompatActivity{
         setContentView(R.layout.activity_upload_album);
 
         initViews();
+        auth = FirebaseAuth.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
-        mDatabase = FirebaseDatabase.getInstance("https://salt-m-default-rtdb.asia-southeast1.firebasedatabase.app").getReference(Constants.DATABASE_PATH_UPLOADS);
+        mDatabase = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS);
         btnAlbumChoose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,6 +111,7 @@ public class UploadAlbumActivity extends AppCompatActivity{
     }
 
     private void uploadFile() {
+        FirebaseUser currentUser = auth.getCurrentUser();
         if(filePath !=null){
             ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setTitle("uploading...");
@@ -120,7 +126,7 @@ public class UploadAlbumActivity extends AppCompatActivity{
                         public void onSuccess(Uri uri) {
                             String url = uri.toString();
                             Upload upload = new Upload(txtAlbumName.getText().toString().trim(),
-                                    url,songsCategory);
+                                    url,songsCategory,currentUser.getEmail());
                             String uploadId = mDatabase.push().getKey();
                             assert uploadId != null;
                             mDatabase.child(uploadId).setValue(upload);

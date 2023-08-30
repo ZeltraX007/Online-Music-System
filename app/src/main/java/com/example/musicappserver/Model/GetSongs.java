@@ -1,6 +1,11 @@
 package com.example.musicappserver.Model;
 
-public class GetSongs {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+public class GetSongs implements Parcelable {
     private String songCategory, songTitle, artist, album_art, songDuration, songLink, mKey;
 
     public GetSongs(String songCategory, String songTitle, String artist, String album_art, String songDuration, String songLink) {
@@ -17,6 +22,28 @@ public class GetSongs {
 
     public GetSongs() {
     }
+
+    protected GetSongs(Parcel in) {
+        songCategory = in.readString();
+        songTitle = in.readString();
+        artist = in.readString();
+        album_art = in.readString();
+        songDuration = in.readString();
+        songLink = in.readString();
+        mKey = in.readString();
+    }
+
+    public static final Creator<GetSongs> CREATOR = new Creator<GetSongs>() {
+        @Override
+        public GetSongs createFromParcel(Parcel in) {
+            return new GetSongs(in);
+        }
+
+        @Override
+        public GetSongs[] newArray(int size) {
+            return new GetSongs[size];
+        }
+    };
 
     public String getSongCategory() {
         return songCategory;
@@ -75,4 +102,19 @@ public class GetSongs {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(songCategory);
+        dest.writeString(songTitle);
+        dest.writeString(artist);
+        dest.writeString(album_art);
+        dest.writeString(songDuration);
+        dest.writeString(songLink);
+        dest.writeString(mKey);
+    }
 }

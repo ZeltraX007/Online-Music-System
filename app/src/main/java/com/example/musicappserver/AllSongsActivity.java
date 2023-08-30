@@ -2,10 +2,13 @@ package com.example.musicappserver;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -20,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,13 +52,20 @@ public class AllSongsActivity extends AppCompatActivity {
             public void onClickListener(GetSongs songs, int position) {
 
                 changeSelectedSong(position);
-
-                jcPlayerView.playAudio(jcAudios.get(position));
-                jcPlayerView.setVisibility(View.VISIBLE);
-                jcPlayerView.createNotification();
+                OneSongFragment fragment = new OneSongFragment(position);
+                fragment.setSong(songs);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(R.id.songFrag,fragment);
+                ft.commit();
+//                Intent intent = new Intent(AllSongsActivity.this,OneSongActivity.class);
+//                intent.putExtra("song", songs);
+//                startActivity(intent);
+//                jcPlayerView.playAudio(jcAudios.get(position));
+//                jcPlayerView.setVisibility(View.VISIBLE);
+//                jcPlayerView.createNotification();
             }
         });
-        databaseReference = FirebaseDatabase.getInstance("https://salt-m-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("songs");
+        databaseReference = FirebaseDatabase.getInstance().getReference("songs");
         System.out.println(databaseReference);
         valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -102,5 +113,9 @@ public class AllSongsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mupload = new ArrayList<>();
         recyclerView.setAdapter(adapter);
+    }
+
+    public ArrayList<JcAudio> getJcAudios() {
+        return jcAudios;
     }
 }

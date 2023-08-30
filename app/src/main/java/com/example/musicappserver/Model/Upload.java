@@ -4,11 +4,13 @@ public class Upload {
     private String name;
     private String url;
     private String songsCategory;
+    private String uploadedBy;
 
-    public Upload(String name, String url, String songsCategory) {
+    public Upload(String name, String url, String songsCategory, String uploadedBy) {
         this.name = name;
         this.url = url;
         this.songsCategory = songsCategory;
+        this.uploadedBy = uploadedBy;
     }
 
     public Upload() {
@@ -36,5 +38,13 @@ public class Upload {
 
     public void setSongsCategory(String songsCategory) {
         this.songsCategory = songsCategory;
+    }
+
+    public String getUploadedBy() {
+        return uploadedBy;
+    }
+
+    public void setUploadedBy(String uploadedBy) {
+        this.uploadedBy = uploadedBy;
     }
 }

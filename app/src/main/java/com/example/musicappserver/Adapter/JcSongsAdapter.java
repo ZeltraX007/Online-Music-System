@@ -5,6 +5,7 @@ import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.musicappserver.Model.GetSongs;
 import com.example.musicappserver.Model.Utility;
 import com.example.musicappserver.R;
@@ -46,7 +48,7 @@ public class JcSongsAdapter extends RecyclerView.Adapter<JcSongsAdapter.SongsAda
 
         if(getSongs != null){
             if(selectedPosition == position){
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(context, com.example.jean.jcplayer.R.color.colorPrimary));
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(context, com.example.jean.jcplayer.R.color.colorAccent));
                 holder.ivPlayActive.setVisibility(View.VISIBLE);
             } else {
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(context,R.color.transparent));
@@ -54,10 +56,10 @@ public class JcSongsAdapter extends RecyclerView.Adapter<JcSongsAdapter.SongsAda
             }
         }
 
+        Glide.with(context).load(getSongs.getAlbum_art()).into(holder.iv_artwork);
         holder.tvTitle.setText(getSongs.getSongTitle());
         holder.tvArtist.setText(getSongs.getArtist());
         holder.tvDuration.setText(Utility.convertDuration(Long.parseLong(getSongs.getSongDuration())));
-
         holder.bind(getSongs,listner);
     }
 
@@ -69,7 +71,7 @@ public class JcSongsAdapter extends RecyclerView.Adapter<JcSongsAdapter.SongsAda
     public class SongsAdapterView extends RecyclerView.ViewHolder{
         private TextView tvTitle,tvArtist,tvDuration;
         private ImageView iv_artwork;
-        ImageView ivPlayActive;
+        private ImageView ivPlayActive;
         public SongsAdapterView(@NonNull View itemView) {
             super(itemView);
 
