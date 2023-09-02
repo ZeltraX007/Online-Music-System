@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -17,6 +18,16 @@ import com.cleveroad.audiovisualization.VisualizerDbmHandler;
 import com.example.jean.jcplayer.model.JcAudio;
 import com.example.jean.jcplayer.view.JcPlayerView;
 import com.example.musicappserver.Model.GetSongs;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
 
 import java.util.ArrayList;
 
@@ -29,6 +40,11 @@ public class OneSongFragment extends Fragment {
 
     int position;
     GetSongs song;
+    private StorageReference mStorageRef;
+    private DatabaseReference referenceSongs,refLiked;
+    private ValueEventListener valueEventListener;
+
+    Boolean checkin = false;
     private ImageView imageSong;
     JcPlayerView jcPlayerView;
     private AudioVisualization audioVisualization;
@@ -42,7 +58,7 @@ public class OneSongFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    Button btnBack;
+    private ImageView like;
 
     public OneSongFragment() {
     }
@@ -87,21 +103,83 @@ public class OneSongFragment extends Fragment {
         // minimize
 //        btnBack = view.findViewById(R.id.btnBack);
         jcPlayerView = view.findViewById(R.id.jcplayer1);
+        like = view.findViewById(R.id.like);
 
         if(getActivity() instanceof AllSongsActivity)
             jcAudios = ((AllSongsActivity)getActivity()).getJcAudios();
-        else {
+        else if (getActivity() instanceof SongActivity){
             jcAudios = ((SongActivity) getActivity()).getJcAudios();
-        }
+        } else if (getActivity() instanceof LikedActivity)
+            jcAudios = ((LikedActivity) getActivity()).getJcAudios();
         jcPlayerView.initPlaylist(jcAudios,null);
         jcPlayerView.playAudio(jcAudios.get(position));
         jcPlayerView.createNotification();
+        referenceSongs = FirebaseDatabase.getInstance().getReference().child("songs");
+        refLiked = FirebaseDatabase.getInstance().getReference().child("liked");
+        mStorageRef = FirebaseStorage.getInstance().getReference().child("songs");
 //        btnBack.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
 //                resizeFragment(OneSongFragment.this,500,100);
 //            }
 //        });
+        valueEventListener = refLiked.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot das: snapshot.getChildren()){
+                    GetSongs getSongs = das.getValue(GetSongs.class);
+                    getSongs.setmKey(das.getKey());
+                    if(song.getSongTitle().equals(getSongs.getSongTitle())) {
+                        checkin = true;
+                        like.setImageResource(R.drawable.ic_like_red);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(checkin == false){
+                    String uploadId = referenceSongs.push().getKey();
+                    refLiked.child(uploadId).setValue(song).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            like.setImageResource(R.drawable.ic_like_red);
+                            checkin = true;
+                        }
+                    });
+
+                } else {
+                    Query query = refLiked.orderByChild("songTitle").equalTo(song.getSongTitle());
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for(DataSnapshot das:snapshot.getChildren()){
+                                das.getRef().removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        like.setImageResource(R.drawable.ic_like);
+                                        checkin = false;
+                                    }
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+        });
         return view;
     }
 

@@ -14,7 +14,7 @@ public class NavigatorActivity extends AppCompatActivity {
     private static final int RECORD_AUDIO_PERMISSION_CODE = 1;
     private static final int MODIFY_AUDIO_SETTINGS_PERMISSION_CODE = 2;
 
-    private Button goToUpload, goToSong, goToAllSongs, btnPlaylist,goToRecording;
+    private Button goToUpload, goToSong, goToAllSongs, btnPlaylist,goToRecording,goToLiked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +26,7 @@ public class NavigatorActivity extends AppCompatActivity {
             goToAllSongs = findViewById(R.id.goToAllSongs);
             btnPlaylist = findViewById(R.id.btnPlaylist);
             goToRecording = findViewById(R.id.goToRecording);
+            goToLiked = findViewById(R.id.goToLiked);
 
         // Check if the app has permission to record audio
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -74,6 +75,13 @@ public class NavigatorActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     startActivity(new Intent(NavigatorActivity.this, RecordActivity.class));
+                }
+            });
+
+            goToLiked.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(NavigatorActivity.this, LikedActivity.class));
                 }
             });
     }

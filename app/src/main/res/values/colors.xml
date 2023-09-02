@@ -4,7 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
     <color name="weird_gray">#E3E3E3</color>
-    <color name="av_color_bg">#36D8F4</color>
+    <color name="av_color_bg">#9E007C</color>
     <color name="green">#00FF00</color>
     <color name="red">#FF0000</color>
     <color name="colorPrimary">@color/blue</color>

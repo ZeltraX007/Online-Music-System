@@ -13,17 +13,17 @@
 
         <com.cleveroad.audiovisualization.GLAudioVisualizationView
             android:id="@+id/visualizer_view"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:av_backgroundColor="@color/av_color_bg"
             app:av_bubblesPerLayer="16"
             app:av_bubblesRandomizeSizes="true"
             app:av_bubblesSize="@dimen/bubble_size"
-            app:av_layersCount="4"
-            app:av_wavesCount="7"
+            app:av_layersCount="5"
+            app:av_wavesCount="9"
             app:av_wavesFooterHeight="@dimen/footer_height"
             app:av_wavesHeight="@dimen/wave_height"
-            app:layout_constraintBottom_toTopOf="@+id/jcplayer1"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -37,8 +37,8 @@
 
         <ImageView
             android:id="@+id/like"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginBottom="4dp"
             android:src="@drawable/ic_like"
             app:layout_constraintBottom_toTopOf="@+id/jcplayer1"
